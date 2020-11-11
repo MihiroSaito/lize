@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "181960867392",
+    "firebase_url": "https://lize-73cff.firebaseio.com",
+    "project_id": "lize-73cff",
+    "storage_bucket": "lize-73cff.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:181960867392:android:85e8f7bf1a3ef9a7be69a5",
+        "android_client_info": {
+          "package_name": "com.example.lize"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "181960867392-upo9ekof5cq7iq9kk6cishcde87vap8q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSLZUPyOTtug0kQ-W9vxBBs9XaLwaHy3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "181960867392-upo9ekof5cq7iq9kk6cishcde87vap8q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
