@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
-import 'package:lize/views/chat_room.dart';
+import 'package:lize/views/new_user.dart';
 
 class SignUp extends StatefulWidget {
 
@@ -107,7 +107,7 @@ class _SignUpState extends State<SignUp> {
                         ),
                         label: Text('Googleアカウント'),
                         onPressed: (){
-                          HandleSignUpWithGoogle().then((value) {
+                          handleSignUpWithGoogle().then((value) {
                             setState(() {
                               isLoading = false;
                             });
@@ -138,7 +138,7 @@ class _SignUpState extends State<SignUp> {
                           ),
                         ),
                         onPressed: (){
-                          HandleSignUpWithFB().then((value) {
+                          handleSignUpWithFB().then((value) {
                             setState(() {
                               isLoading = false;
                             });
@@ -244,7 +244,7 @@ class _SignUpState extends State<SignUp> {
                           onPressed: (){
                             FocusScope.of(context).unfocus();
                             if(_form.currentState.validate()){
-                              HandleSignUpWithEmail().then((value) {
+                              handleSignUpWithEmail().then((value) {
                                 setState(() {
                                   isLoading = false;
                                 });
@@ -274,7 +274,7 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  Future<void> HandleSignUpWithEmail() async {
+  Future<void> handleSignUpWithEmail() async {
     try {
       setState(() {
         isLoading = true;
@@ -287,7 +287,11 @@ class _SignUpState extends State<SignUp> {
       Navigator.pushReplacement(
         context,
         CupertinoPageRoute(
-            builder: (BuildContext context) => ChatRoom(uid: user.uid, email: user.email)
+            builder: (BuildContext context) =>
+                NewUser(
+                    uid: user.uid,
+                    email: user.email
+                )
         )
       );
     } catch(e){
@@ -295,7 +299,7 @@ class _SignUpState extends State<SignUp> {
     }
   }
 
-  Future<void> HandleSignUpWithGoogle() async {
+  Future<void> handleSignUpWithGoogle() async {
     try {
       setState(() {
         isLoading = true;
@@ -313,10 +317,10 @@ class _SignUpState extends State<SignUp> {
           context,
           CupertinoPageRoute(
               builder: (BuildContext context) =>
-                  ChatRoom(uid: _user.uid,
+                  NewUser(uid: _user.uid,
                       email: _user.email,
-                      name: _user.displayName,
-                      url: _user.photoURL)
+                      name: _user.displayName
+                  )
           )
       );
     } catch (e) {
@@ -324,7 +328,7 @@ class _SignUpState extends State<SignUp> {
     }
   }
 
-  Future<void> HandleSignUpWithFB() async {
+  Future<void> handleSignUpWithFB() async {
     try {
       setState(() {
         isLoading = true;
@@ -340,10 +344,10 @@ class _SignUpState extends State<SignUp> {
           context,
           CupertinoPageRoute(
               builder: (BuildContext context) =>
-                  ChatRoom(uid: _user.uid,
+                  NewUser(uid: _user.uid,
                       email: _user.email,
                       name: _user.displayName,
-                      url: _user.photoURL)
+                  )
           )
       );
     } catch(e){

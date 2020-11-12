@@ -61,10 +61,6 @@ class Initial extends StatelessWidget {
                       color: Color(0xFF1DBD04),
                       textColor: Colors.white,
                       onPressed: (){
-                        Navigator.push(
-                            context,
-                            CupertinoPageRoute(builder: (context) => NewUser())
-                        );
                       },
                     ),
                   ),
