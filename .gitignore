@@ -39,3 +39,8 @@ app.*.symbols
 
 # Obfuscation related
 app.*.map.json
+
+.packages
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+android/local.properties
