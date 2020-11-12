@@ -32,6 +32,8 @@ dependencies:
   cloud_firestore: ^0.14.3
   firebase_storage: ^5.0.1
   image_picker: ^0.6.7+12
+  geolocator: ^6.1.6
+  url_launcher: ^5.7.10
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -68,6 +70,7 @@ flutter:
     - images/LIZE-icon.jpg
     - images/f_logo_RGB-White_250.png
     - images/google-icon.png
+    - images/GPS.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

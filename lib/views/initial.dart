@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lize/views/new_user.dart';
+import 'package:lize/views/agreement.dart';
 import 'package:lize/views/sign_up.dart';
 
 class Initial extends StatelessWidget {

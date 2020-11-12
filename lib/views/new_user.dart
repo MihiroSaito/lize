@@ -5,8 +5,7 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
-import 'chat_room.dart';
+import 'package:lize/views/agreement.dart';
 
 class NewUser extends StatefulWidget {
 
@@ -35,13 +34,18 @@ class _NewUserState extends State<NewUser> {
   File _image;
 
   @override
+  void initState() {
+    super.initState();
+    if(widget.name != null) {
+      nameController.text = widget.name;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     final bottomSpace = MediaQuery.of(context).viewInsets.bottom;
 
-    if(widget.name != null) {
-      nameController.text = widget.name;
-    }
 
     return WillPopScope(
       onWillPop: () async => false,
@@ -228,7 +232,7 @@ class _NewUserState extends State<NewUser> {
           context,
           CupertinoPageRoute(
               builder: (BuildContext context) =>
-                  ChatRoom(uid: widget.uid,
+                  Agreement(uid: widget.uid,
                       email: widget.email,
                       name: nameController.text,
                       url: imageURL)

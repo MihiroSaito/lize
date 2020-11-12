@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ChatRoom extends StatefulWidget {
@@ -6,14 +7,16 @@ class ChatRoom extends StatefulWidget {
   final String email;
   final String name;
   final String url;
+  final bool complete;
 
-  ChatRoom({this.uid, this.email, this.name, this.url});
+  ChatRoom({this.uid, this.email, this.name, this.url, this.complete});
 
   @override
   _ChatRoomState createState() => _ChatRoomState();
 }
 
 class _ChatRoomState extends State<ChatRoom> {
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -22,7 +25,7 @@ class _ChatRoomState extends State<ChatRoom> {
         appBar: AppBar(
 
         ),
-        body: Text("aaaaaaaaa"),
+        body: Text('aaaaaaa'),
       ),
     );
   }
