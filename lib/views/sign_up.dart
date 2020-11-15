@@ -295,7 +295,7 @@ class _SignUpState extends State<SignUp> {
         )
       );
     } catch(e){
-      print(e);
+      alertError(e);
     }
   }
 
@@ -324,7 +324,7 @@ class _SignUpState extends State<SignUp> {
           )
       );
     } catch (e) {
-      print(e);
+      alertError(e);
     }
   }
 
@@ -351,7 +351,45 @@ class _SignUpState extends State<SignUp> {
           )
       );
     } catch(e){
-      print(e);
+      alertError(e);
     }
   }
+
+  alertError(e){
+
+    String errorMessage;
+
+    switch (e.code) {
+      case 'email-already-in-use':
+        errorMessage =  'メールアドレスは他のアカウントに使用されています';
+        break;
+      case 'user-disabled':
+        errorMessage = 'このアカウントはブロックされています';
+        break;
+      case 'account-exists-with-different-Credential':
+        errorMessage = '選択したアカウントと同じメールアドレスで作成されたアカウントが既に存在します';
+        break;
+      default:
+        errorMessage = '予期せぬエラーが発生しました。(エラー: ${e.code})';
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+            title: Text(errorMessage),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                  child: Text("OK"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }
+              ),
+            ]
+        );
+      },
+    );
+  }
+
+
 }
