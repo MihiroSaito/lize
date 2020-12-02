@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class ChatRoom extends StatefulWidget {
 
@@ -83,7 +84,7 @@ class _ChatRoomState extends State<ChatRoom> {
                             ),
                           ),
                           onTap: (){
-                            //ToDo
+                            //ToDo 検索欄をクリック時の処理
                           },
                         ),
                       ),
@@ -93,7 +94,7 @@ class _ChatRoomState extends State<ChatRoom> {
                         child: GestureDetector(
                           child: Icon(Icons.qr_code, color: Color(0xFF63697D), size: 25,),
                           onTap: (){
-                            //ToDo
+                            //ToDo QRコードリーダーを開く
                           },
                         ),
                       )
@@ -350,23 +351,61 @@ class _ChatRoomState extends State<ChatRoom> {
                               ),),
                             ],
                           ),
-                          Container(
-                            height: MediaQuery.of(context).size.width / 3.9,
-                            child: GridView.extent(
-
-                              maxCrossAxisExtent: MediaQuery.of(context).size.width / 3.9,
-                              scrollDirection: Axis.horizontal,
-                              children: List<Widget>.generate(
-                                20,
-                                _musicGenerator,
+                          SizedBox(height: 20,),
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: MediaQuery.of(context).size.width / 2.3,
+                            ),
+                            child: Container(
+                              child: GridView.builder(
+                                itemCount: 20,
+                                scrollDirection: Axis.horizontal,
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 1,
+                                  childAspectRatio: 1.5,
+                                ),
+                                itemBuilder: (BuildContext context, int index) {
+                                  return _musicGenerator(index);
+                                }
                               ),
                             ),
+                          ),
+                          SizedBox(height: 5,),
+                          Row(
+                            children: [
+                              Icon(Icons.info_outline, size: 12, color: Colors.grey[600],),
+                              SizedBox(width: 3,),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 1),
+                                child: Text(
+                                  'LIZE MUSICの一時間ごとの再生数を元にしたランキングです。',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.grey[600]
+                                  ),
+                                ),
+                              )
+                            ],
                           )
                         ],
                       ),
                     ),
                   ),
-                  SizedBox(height: 30,),
+                  SizedBox(height: 50,),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20, right: 20),
+                    child: Container(
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Color(0xFF00B9E4),
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        image: DecorationImage(
+                          image: AssetImage('images/lize-mobile.png')
+                        )
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 50,)
                 ],
               ),
             )
@@ -430,7 +469,12 @@ class _ChatRoomState extends State<ChatRoom> {
                   ),
                 ),
                 SizedBox(height: 5,),
-                Text("AppName")
+                Text(
+                  "AppName",
+                  style: TextStyle(
+                    fontSize: 12
+                  ),
+                )
               ],
             ),
           ),
@@ -443,32 +487,49 @@ class _ChatRoomState extends State<ChatRoom> {
   }
 
   Widget _musicGenerator(int index){
-    return Column(
-      children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: Container(
+    return Padding(
+      padding: const EdgeInsets.only(right: 10),
+      child: Container(
+        child: Column(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width / 3.9,
+              height: MediaQuery.of(context).size.width / 3.9,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.all(Radius.circular(5)),
+                image: DecorationImage(
+                  image: AssetImage('images/pngwing.com.png'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            SizedBox(height: 10,),
+            Container(
+              width: MediaQuery.of(context).size.width / 3.9,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width / 3.9,
-                    height: MediaQuery.of(context).size.width / 3.9,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                      image: DecorationImage(
-                        image: AssetImage("images/LIZE-icon.jpg"),
-                        fit: BoxFit.cover,
-                      ),
+                  Text(
+                    'happy song',
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                  ),
+                  SizedBox(height: 5,),
+                  Text(
+                    'yamada',
+                    style: TextStyle(
+                      color: Colors.grey[600]
                     ),
-                    // child: Image.asset("images/LIZE-icon.jpg")
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ],
               ),
             ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

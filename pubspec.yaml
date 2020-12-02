@@ -71,6 +71,8 @@ flutter:
     - images/f_logo_RGB-White_250.png
     - images/google-icon.png
     - images/GPS.png
+    - images/lize-mobile.png
+    - images/pngwing.com.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
