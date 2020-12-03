@@ -111,6 +111,10 @@ class _SignUpState extends State<SignUp> {
                             setState(() {
                               isLoading = false;
                             });
+                          }).catchError((onError){
+                            setState(() {
+                              isLoading = false;
+                            });
                           });
                         },
                         color: Colors.white,
@@ -139,6 +143,10 @@ class _SignUpState extends State<SignUp> {
                         ),
                         onPressed: (){
                           handleSignUpWithFB().then((value) {
+                            setState(() {
+                              isLoading = false;
+                            });
+                          }).catchError((onError){
                             setState(() {
                               isLoading = false;
                             });
@@ -325,6 +333,7 @@ class _SignUpState extends State<SignUp> {
       );
     } catch (e) {
       alertError(e);
+      print("ここ");
     }
   }
 

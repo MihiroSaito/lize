@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lize/views/agreement.dart';
-import 'package:lize/views/chat_room.dart';
 import 'package:lize/views/sign_up.dart';
+import 'package:lize/views/user_page.dart';
 
 class Initial extends StatelessWidget {
 
@@ -64,7 +63,7 @@ class Initial extends StatelessWidget {
                       onPressed: (){
                         Navigator.push(
                             context,
-                            CupertinoPageRoute(builder: (context) => ChatRoom())
+                            CupertinoPageRoute(builder: (context) => UserPage())
                         );
                       },
                     ),

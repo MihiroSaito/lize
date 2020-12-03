@@ -2,9 +2,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:lize/views/user_page.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import 'chat_room.dart';
 
 class Agreement extends StatefulWidget {
 
@@ -210,7 +209,7 @@ class _AgreementState extends State<Agreement> {
                               context,
                               CupertinoPageRoute(
                                   builder: (BuildContext context) =>
-                                      ChatRoom(uid: widget.uid,
+                                      UserPage(uid: widget.uid,
                                           email: widget.email,
                                           name: widget.name,
                                           url: widget.url,
@@ -260,7 +259,7 @@ class _AgreementState extends State<Agreement> {
             context,
             CupertinoPageRoute(
                 builder: (BuildContext context) =>
-                    ChatRoom(uid: widget.uid,
+                    UserPage(uid: widget.uid,
                         email: widget.email,
                         name: widget.name,
                         url: widget.url,
