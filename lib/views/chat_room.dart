@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ChatRoom extends StatefulWidget {
   @override
@@ -7,8 +10,17 @@ class ChatRoom extends StatefulWidget {
 }
 
 class _ChatRoomState extends State<ChatRoom> {
+
+  final textController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+
+    final availableHeight = MediaQuery.of(context).size.height -
+        AppBar().preferredSize.height -
+        MediaQuery.of(context).padding.top -
+        MediaQuery.of(context).padding.bottom;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF202B42),
@@ -30,68 +42,110 @@ class _ChatRoomState extends State<ChatRoom> {
           ),
         ],
       ),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        color: Color(0xFF7294C2),
-        child: Column(
-          children: [
-            Container(),
-            Container(
-              height: 50,
-              color: Colors.white,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Container(
+              height: availableHeight,
+              width: MediaQuery.of(context).size.width,
+              color: Color(0xFF7294C2),
+              child: Column(
                 children: [
                   Container(
-                    width: MediaQuery.of(context).size.width * 0.3,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Icon(Icons.add),
-                        Icon(Icons.camera_alt_outlined),
-                        Icon(Icons.image_outlined),
-                      ],
-                    ),
+                    height: availableHeight - 50,
                   ),
                   Container(
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    height: 40,
-                    padding: EdgeInsets.fromLTRB(10, 0, 5, 0),
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[300]),
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.all(Radius.circular(20))
-                    ),
+                    height: 50,
+                    color: Colors.white,
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: "メッセージを入力",
-                              hintStyle: TextStyle(fontSize: 13, color: Colors.grey[400])
-                            ),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.125,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Icon(Icons.add_box, color: Color(0xFF202B42),),
+                            ],
                           ),
-                          flex: 6,
                         ),
-                        Expanded(
-                          child: Icon(Icons.tag_faces),
-                          flex: 1,
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.75,
+                          height: 40,
+                          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey[300]),
+                              color: Colors.grey[100],
+                              borderRadius: BorderRadius.all(Radius.circular(20))
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: textController,
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: null,
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: "メッセージを入力",
+                                    hintStyle: TextStyle(fontSize: 14, color: Colors.grey[400], height: 3)
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 14
+                                  ),
+                                ),
+                                flex: 6,
+                              ),
+                              Expanded(
+                                child: GestureDetector(
+                                  child: Icon(Icons.tag_faces, color: Color(0xFF202B42)),
+                                  onTap: (){
+                                    //ToDo ボタンを押したら表示を変える
+                                  },
+                                ),
+                                flex: 1,
+                              ),
+                            ],
+                          ),
                         ),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.125,
+                          child: GestureDetector(
+                            child: Icon(Icons.send, color: Color(0xFF5173FF)),
+                            onTap: (){
+                              SaveData().then((value){
+                              }).catchError((onError){
+                                print(onError);
+                              });
+                            },
+                          ),
+                        )
                       ],
                     ),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.1,
-                    child: Icon(Icons.mic_none),
                   )
                 ],
               ),
-            )
-          ],
+            ),
+          ),
         ),
       ),
     );
+  }
+
+  Future SaveData() async {
+      try{
+        final doc = FirebaseFirestore.instance.collection("messages").doc();
+        await doc.set(
+          {
+            'content': textController.text,
+            'sender': 'ここにuidを入れる',
+            'created_at': DateTime.now(),
+          }
+        );
+        textController.text = "";
+      } catch(e) {
+
+      }
   }
 }
