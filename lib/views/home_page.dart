@@ -50,6 +50,8 @@ class _HomePageState extends State<HomePage> {
                 preferredSize: Size.fromHeight(10),      // Add this code
                 child: Text(''),
               ),
+              floating: true,
+              snap: false,
               backgroundColor: Color(0xFF202B42),
               centerTitle: true,
               leading: Container(),

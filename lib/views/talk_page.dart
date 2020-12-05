@@ -42,6 +42,8 @@ class _TalkPageState extends State<TalkPage> {
               preferredSize: Size.fromHeight(10),
               child: Text(''),
             ),
+            floating: true,
+            snap: false,
             backgroundColor: Color(0xFF202B42),
             centerTitle: true,
             leading: Container(),
