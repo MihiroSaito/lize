@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
+import 'package:lize/views/news_page.dart';
 import 'package:lize/views/talk_page.dart';
 import 'package:lize/views/home_page.dart';
 
@@ -61,9 +62,7 @@ class _UserPageState extends State<UserPage> {
                 appBar: AppBar(),
               );
             case 3:
-              return Scaffold(
-                appBar: AppBar(),
-              );
+              return NewsPage();
             case 4:
               return Scaffold(
                 appBar: AppBar(),
