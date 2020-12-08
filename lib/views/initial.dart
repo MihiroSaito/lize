@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lize/views/sign_up.dart';
 import 'package:lize/views/user_page.dart';
+import 'package:lize/views/log_in.dart';
 
 class Initial extends StatelessWidget {
 
@@ -63,7 +64,8 @@ class Initial extends StatelessWidget {
                       onPressed: (){
                         Navigator.push(
                             context,
-                            CupertinoPageRoute(builder: (context) => UserPage())
+                            // CupertinoPageRoute(builder: (context) => UserPage())
+                            CupertinoPageRoute(builder: (context) => LogIn())
                         );
                       },
                     ),

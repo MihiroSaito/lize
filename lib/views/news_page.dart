@@ -7,6 +7,16 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPageState extends State<NewsPage> {
+
+  bool isLoading = true;
+
+  void _endLoad(String value){
+    print("読み込み完了");
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,9 +30,26 @@ class _NewsPageState extends State<NewsPage> {
         ),
         title: Text("ニュース", style: TextStyle(fontWeight: FontWeight.bold),),
       ),
-      body: WebView(
-        initialUrl: "https://news.yahoo.co.jp/",
-        javascriptMode: JavascriptMode.unrestricted,
+      body: Stack(
+        children: [
+          WebView(
+            initialUrl: "https://news.yahoo.co.jp/",
+            javascriptMode: JavascriptMode.unrestricted,
+            onPageFinished: _endLoad,
+          ),
+          Positioned(
+            child: isLoading? Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              color: Colors.white,
+              child: Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation(Colors.grey),
+                ),
+              ),
+            ) : SizedBox()
+          )
+        ],
       ),
     );
   }

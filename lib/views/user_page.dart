@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:lize/views/news_page.dart';
 import 'package:lize/views/talk_page.dart';
 import 'package:lize/views/home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserPage extends StatefulWidget {
 
@@ -20,6 +21,13 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
+
+  void setData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('user_uid', widget.uid);
+    prefs.setString('user_name', widget.name);
+    prefs.setString('user_url', widget.url);
+  }
 
   @override
   Widget build(BuildContext context) {

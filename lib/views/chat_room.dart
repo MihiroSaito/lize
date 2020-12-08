@@ -164,78 +164,72 @@ class _ChatRoomState extends State<ChatRoom> {
 
   Widget ChatContents(availableHeight, bottomSpace){
 
-    return Column(
-      children: [
-        Container(
-          // height: availableHeight,
-          // padding: EdgeInsets.only(bottom: bottomSpace + 50),
-          height: availableHeight - (bottomSpace + 50),
-          width: MediaQuery.of(context).size.width,
-          child: StreamBuilder<QuerySnapshot>(
-            stream: messages.orderBy('created_at', descending: true).snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final List<DocumentSnapshot> documents = snapshot.data.docs;
-                return ListView(
-                  reverse: true,
-                  controller: scroll,
-                  children: documents.map((document) {
-                    return Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.75,
-                        child: Row(
+    return Container(
+      height: availableHeight - bottomSpace,
+      padding: EdgeInsets.only(bottom: 50),
+      width: MediaQuery.of(context).size.width,
+      child: StreamBuilder<QuerySnapshot>(
+        stream: messages.orderBy('created_at', descending: true).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final List<DocumentSnapshot> documents = snapshot.data.docs;
+            return ListView(
+              reverse: true,
+              controller: scroll,
+              children: documents.map((document) {
+                return Container(
+                  width: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.only(left: 5, right: 5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(right: 5),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Container(
-                              padding: EdgeInsets.only(right: 5),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    '既読',
-                                    style: TextStyle(
-                                      fontSize: 12
-                                    ),
-                                  ),
-                                  convertDateTime(document['created_at']),
-                                  // Text(
-                                  //     document['created_at'].toDate().toString()
-                                  // ),
-                                ],
+                            Text(
+                              '既読',
+                              style: TextStyle(
+                                fontSize: 12
                               ),
                             ),
-                            ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxWidth: MediaQuery.of(context).size.width * 0.60,
-                              ),
-                              child: Container(
-                                margin: EdgeInsets.only(top: 0, bottom: 5),
-                                padding: EdgeInsets.fromLTRB(12, 10, 12, 10),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                                  color: Color(0xFF70DE53)
-                                ),
-                                child: Text(document['content'],textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                      fontSize: 15
-                                  ),
-                                ),
-                              ),
-                            ),
+                            convertDateTime(document['created_at']),
+                            // Text(
+                            //     document['created_at'].toDate().toString()
+                            // ),
                           ],
                         ),
                       ),
-                    );
-                  }).toList(),
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width * 0.60,
+                        ),
+                        child: Container(
+                          margin: EdgeInsets.only(top: 0, bottom: 5),
+                          padding: EdgeInsets.fromLTRB(12, 10, 12, 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            color: Color(0xFF70DE53)
+                          ),
+                          child: Text(document['content'],textAlign: TextAlign.left,
+                            style: TextStyle(
+                                fontSize: 15
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 );
-              }
-              return Center(
-                child: Text("読み込み中..."),
-              );
-            }
-          ),
-        )
-      ],
+              }).toList(),
+            );
+          }
+          return Center(
+            child: Text("読み込み中..."),
+          );
+        }
+      ),
     );
   }
 

@@ -1,22 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
-
-  final String uid;
-  final String email;
-  final String name;
-  final String url;
-  final bool complete;
-
-  HomePage({this.uid, this.email, this.name, this.url, this.complete});
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+
+  String name;
+  String url;
+
+  void getData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final name = prefs.getString('user_name') ?? "未設定";
+    final url = prefs.getString('user_url') ?? "未設定";
+
+    print(name);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +132,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   SizedBox(width: 20,),
                                   Expanded(
-                                    child: Text("田中太郎", style: TextStyle(
+                                    child: Text("name", style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       ),
