@@ -232,12 +232,6 @@ class _LogInState extends State<LogIn> {
                                 if (value.isEmpty) {
                                   return '入力してください';
                                 }
-                                if (8 > value.length) {
-                                  return 'パスワードは８文字以上で入力してください';
-                                }
-                                if (!(RegExp(r'(?=.*?[a-z])(?=.*?[0-9]).{8,}$').hasMatch(value))){
-                                  return '半角英数字をそれぞれ1つ以上含めてください';
-                                }
                                 return null;
                               },
                               keyboardType: TextInputType.visiblePassword,
@@ -352,15 +346,17 @@ class _LogInState extends State<LogIn> {
     DocumentSnapshot snapshot = await users.doc(_user.uid).get();
     if(snapshot.exists) {
       final uid = snapshot.data()['uid'];
-      final email = snapshot.data()['email'];
+      final url = snapshot.data()['photo_url'];
       final name = snapshot.data()['name'];
+      print("login" + uid);
       Navigator.pushReplacement(
           context,
           CupertinoPageRoute(
               builder: (BuildContext context) =>
                   UserPage(uid: uid,
-                    email: email,
+                    url: url,
                     name: name,
+                    firstLog: true
                   )
           )
       );

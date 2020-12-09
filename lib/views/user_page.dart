@@ -12,9 +12,9 @@ class UserPage extends StatefulWidget {
   final String email;
   final String name;
   final String url;
-  final bool complete;
+  final bool firstLog;
 
-  UserPage({this.uid, this.email, this.name, this.url, this.complete});
+  UserPage({this.uid, this.email, this.name, this.url, this.firstLog});
 
   @override
   _UserPageState createState() => _UserPageState();
@@ -31,6 +31,11 @@ class _UserPageState extends State<UserPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    if(widget.firstLog == true){
+      setData();
+    }
+
     return CupertinoTabScaffold(
         tabBar: CupertinoTabBar(
           iconSize: 25,

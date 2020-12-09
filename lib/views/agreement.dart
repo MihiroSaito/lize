@@ -213,7 +213,6 @@ class _AgreementState extends State<Agreement> {
                                           email: widget.email,
                                           name: widget.name,
                                           url: widget.url,
-                                          complete: true
                                       )
                               )
                           );
@@ -263,7 +262,7 @@ class _AgreementState extends State<Agreement> {
                         email: widget.email,
                         name: widget.name,
                         url: widget.url,
-                        complete: true
+                        firstLog: true
                     )
             )
         );

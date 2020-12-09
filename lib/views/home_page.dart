@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lize/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
@@ -11,15 +14,23 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  String name;
-  String url;
+  String name = "";
+  String url = "";
+  String uid = "";
 
-  void getData() async {
+  @override
+  void initState() {
+    super.initState();
+    // 初期化時にShared Preferencesに保存している値を読み込む
+    getData();
+  }
+  getData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final name = prefs.getString('user_name') ?? "未設定";
-    final url = prefs.getString('user_url') ?? "未設定";
-
-    print(name);
+    setState(() {
+      uid = prefs.getString('user_uid') ?? "未設定";
+      name = prefs.getString('user_name') ?? "未設定";
+      url = prefs.getString('user_url') ?? "未設定";
+    });
   }
 
   @override
@@ -33,7 +44,21 @@ class _HomePageState extends State<HomePage> {
           centerTitle: true,
           leading: IconButton(
             icon: Icon(Icons.settings),
-            onPressed: (){},
+            onPressed: () async {
+              final SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.remove('user_uid');
+              prefs.remove('user_name');
+              prefs.remove('user_url');
+              await FirebaseAuth.instance.signOut();
+              print('ログアウト');
+              Navigator.pushReplacement(
+                  context,
+                  CupertinoPageRoute(
+                      builder: (BuildContext context) =>
+                          MyApp()
+                  )
+              );
+            },
           ),
           title: Text("ホーム", style: TextStyle(fontWeight: FontWeight.bold),),
           actions: <Widget>[
@@ -123,16 +148,19 @@ class _HomePageState extends State<HomePage> {
                               child: Row(
                                 children: [
                                   Container(
-                                    width: MediaQuery.of(context).size.width / 6,
-                                    height: MediaQuery.of(context).size.width / 6,
+                                    width: MediaQuery.of(context).size.width / 6.5,
+                                    height: MediaQuery.of(context).size.width / 6.5,
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.all(Radius.circular(50)),
-                                        border: Border.all(color: Colors.grey[300], width: 2)
+                                        image: DecorationImage(
+                                          image: NetworkImage(url),
+                                          fit: BoxFit.cover
+                                        )
                                     ),
                                   ),
                                   SizedBox(width: 20,),
                                   Expanded(
-                                    child: Text("name", style: TextStyle(
+                                    child: Text(name, style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       ),
@@ -216,19 +244,24 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         Container(
-                          child: GestureDetector(
-                            child: ListTile(
-                              leading: Icon(Icons.person_outline, color: Colors.black,),
-                              title: Text('友だち', style: TextStyle(
-                                fontWeight: FontWeight.bold
-                              ),),
-                              trailing: GestureDetector(
-                                child: Icon(Icons.keyboard_arrow_down),
+                          child: Column(
+                            children: [
+                              GestureDetector(
+                                child: ListTile(
+                                  leading: Icon(Icons.person_outline, color: Colors.black,),
+                                  title: Text('友だち', style: TextStyle(
+                                    fontWeight: FontWeight.bold
+                                  ),),
+                                  trailing: GestureDetector(
+                                    child: Icon(Icons.keyboard_arrow_down),
+                                  ),
+                                ),
+                                onTap: (){
+                                  print("pressed 友だち");
+                                },
                               ),
-                            ),
-                            onTap: (){
-                              print("pressed 友だち");
-                            },
+                              FriendsList()
+                            ],
                           ),
                         ),
                       ],
@@ -505,6 +538,87 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget FriendsList(){
+
+    final users = FirebaseFirestore.instance.collection('users');
+
+    return Container(
+      child: StreamBuilder<QuerySnapshot>(
+        stream: users.snapshots(),
+        builder: (context, snapshot) {
+          if(snapshot.hasData){
+            final List<DocumentSnapshot> documents = snapshot.data.docs;
+            final length = documents.length - 1;
+            return Container(
+              height: MediaQuery.of(context).size.width / 8 * length + (length * 10),
+              child: ListView(
+                physics: NeverScrollableScrollPhysics(),
+                children: documents.map((document) {
+                  if(!(document['uid'] == "SPijUTkOQpXw2HyYJiBMv73KS2x2")) {
+                    return GestureDetector(
+                      child: Container(
+                        padding: EdgeInsets.only(top: 10),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: MediaQuery
+                                          .of(context)
+                                          .size
+                                          .width / 8,
+                                      height: MediaQuery
+                                          .of(context)
+                                          .size
+                                          .width / 8,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50)),
+                                          image: DecorationImage(
+                                              image: NetworkImage(
+                                                  document['photo_url'] ??
+                                                      'https://www.google.com/url?sa=i&url=https%3A%2F%2Fsite.groupe-psa.com%2Fbrasil%2Fen%2Fhomepage%2Fwhite-background-2%2F&psig=AOvVaw3lPmoE-9IOEhazVdO9SnsV&ust=1607628306699000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCPCPoKPQwe0CFQAAAAAdAAAAABAI'),
+                                              fit: BoxFit.cover
+                                          )
+                                      ),
+                                    ),
+                                    SizedBox(width: 20,),
+                                    Expanded(
+                                      child: Text(
+                                        document['name'], style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      onTap: (){
+                        print(document['uid']);
+                        //ToDo uidを使って一意のページを表示する
+                      },
+                    );
+                  } else {
+                    return Container();
+                  }
+                }).toList(),
+              ),
+            );
+          }
+          return null;
+        }
       ),
     );
   }
