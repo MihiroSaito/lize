@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lize/main.dart';
+import 'package:lize/views/friend_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
@@ -558,7 +559,7 @@ class _HomePageState extends State<HomePage> {
               child: ListView(
                 physics: NeverScrollableScrollPhysics(),
                 children: documents.map((document) {
-                  if(!(document['uid'] == "SPijUTkOQpXw2HyYJiBMv73KS2x2")) {
+                  if(!(document['uid'] == uid)) {
                     return GestureDetector(
                       child: Container(
                         padding: EdgeInsets.only(top: 10),
@@ -583,7 +584,7 @@ class _HomePageState extends State<HomePage> {
                                           image: DecorationImage(
                                               image: NetworkImage(
                                                   document['photo_url'] ??
-                                                      'https://www.google.com/url?sa=i&url=https%3A%2F%2Fsite.groupe-psa.com%2Fbrasil%2Fen%2Fhomepage%2Fwhite-background-2%2F&psig=AOvVaw3lPmoE-9IOEhazVdO9SnsV&ust=1607628306699000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCPCPoKPQwe0CFQAAAAAdAAAAABAI'),
+                                                      'http://kumiho.sakura.ne.jp/twegg/gen_hito.cgi?fr=101&fg=119&fb=134&br=204&bg=214&bb=221'),
                                               fit: BoxFit.cover
                                           )
                                       ),
@@ -607,7 +608,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       onTap: (){
                         print(document['uid']);
-                        //ToDo uidを使って一意のページを表示する
+                        Navigator.of(context).push(_createRoute(document['uid'],document['name'],document['photo_url']));
                       },
                     );
                   } else {
@@ -617,9 +618,31 @@ class _HomePageState extends State<HomePage> {
               ),
             );
           }
-          return null;
+          return Container();
         }
       ),
+    );
+  }
+
+  Route _createRoute(friendUid, friendName, friendUrl) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => FriendPage(friendUid: friendUid,
+        friendUrl: friendUrl,
+        friendName: friendName,
+        uid: uid
+      ),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        var begin = Offset(0.0, 1.0);
+        var end = Offset.zero;
+        var curve = Curves.ease;
+
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
     );
   }
 }
