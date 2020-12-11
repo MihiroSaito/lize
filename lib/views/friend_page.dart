@@ -176,7 +176,7 @@ class _FriendPageState extends State<FriendPage> {
                                 ),
                               ),
                               onTap: (){
-                                addTalkRoom();
+                                searchChatRoom();
                               },
                             ),
                             GestureDetector(
@@ -306,14 +306,46 @@ class _FriendPageState extends State<FriendPage> {
     );
   }
 
-  Future addTalkRoom() async {
+  Future searchChatRoom() async {
+    try {
+      final rooms = FirebaseFirestore.instance.collection("rooms");
+      // if(rooms.where('${widget.uid}', isEqualTo: 'member').where('${widget.friendUid}', isEqualTo: 'member');
+      final room = rooms.where('${widget.uid}', isEqualTo: 'member').where('${widget.friendUid}', isEqualTo: 'member');
+      room.get().then((value){
+        final searchedRoom = value.docs.first;
+        final roomId = searchedRoom.id;
+        Navigator.pushReplacement(
+            context,
+            CupertinoPageRoute(
+                builder: (BuildContext context) =>
+                    ChatRoom(
+                      roomId: roomId,
+                      uid: widget.uid,
+                      friendUid: widget.friendUid,
+                      friendName: widget.friendName,
+                      friendUrl: widget.friendUrl,
+                    )
+            )
+        );
+      }).catchError((onError){
+        print(onError);
+        addChatRoom();
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future addChatRoom() async {
     try {
       final doc = FirebaseFirestore.instance.collection("rooms").doc();
+      final roomId = doc.id;
+      print("新規ルーム：$roomId");
       await doc.set(
           {
             'room_name': null,
-            'member1': widget.uid,
-            'member2': widget.friendUid,
+            '${widget.uid}': "member",
+            '${widget.friendUid}': "member",
             'created_at': DateTime.now(),
           }
       );
@@ -322,6 +354,7 @@ class _FriendPageState extends State<FriendPage> {
           CupertinoPageRoute(
               builder: (BuildContext context) =>
                   ChatRoom(
+                    roomId: roomId,
                     uid: widget.uid,
                     friendUid: widget.friendUid,
                     friendName: widget.friendName,
