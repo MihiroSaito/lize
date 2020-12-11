@@ -27,12 +27,15 @@ class _ChatRoomState extends State<ChatRoom> {
 
   final messages = FirebaseFirestore.instance.collection('messages');
 
-  bool boolFirst;
-
   var lastMessageDate;
 
-  // final yesterday = new DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day - 1, 23, 59);
-  final nextDay = new DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day -0, 0, 0);
+  var firstMessageDate;
+
+  final yesterday = new DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day -1);
+
+  final now = new DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
+  var _weekName =  ['月', '火', '水', '木', '金', '土', '日'];
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +140,7 @@ class _ChatRoomState extends State<ChatRoom> {
                         child: Icon(Icons.send, color: Color(0xFF5173FF)),
                         onTap: (){
                           if(!(textController.text == '')){
-                            SaveData(availableHeight, bottomSpace).then((value){
+                            saveData(availableHeight, bottomSpace).then((value){
                               textController.text = "";
                               scroll.animateTo(
                                 0,
@@ -161,20 +164,29 @@ class _ChatRoomState extends State<ChatRoom> {
     );
   }
 
-  Future SaveData(availableHeight, bottomSpace) async {
+  Future saveData(availableHeight, bottomSpace) async {
     try {
 
-      //確定事項：トークのラストメッセージの時間取得済
-      //ToDO ラストメッセージを使ってどうやって1日の最初のメッセージのみの上に日付をつけるか
-
       final doc = FirebaseFirestore.instance.collection("messages").doc();
-      await doc.set(
-          {
-            'content': textController.text,
-            'sender': widget.uid,
-            'created_at': DateTime.now(),
-          }
+      if(!(lastMessageDate == now)){
+        await doc.set(
+            {
+              'day_first': true,
+              'content': textController.text,
+              'sender': widget.uid,
+              'created_at': DateTime.now(),
+            }
         );
+      } else {
+        await doc.set(
+            {
+              'day_first': false,
+              'content': textController.text,
+              'sender': widget.uid,
+              'created_at': DateTime.now(),
+            }
+        );
+      }
     } catch (e) {
       print(e);
     }
@@ -191,56 +203,62 @@ class _ChatRoomState extends State<ChatRoom> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final List<DocumentSnapshot> documents = snapshot.data.docs;
-            lastMessageDate = documents.last['created_at'].toDate();
+            var createdAt = documents.last['created_at'].toDate();
+            lastMessageDate = new DateTime(createdAt.year, createdAt.month, createdAt.day);
             return ListView(
               controller: scroll,
               children: documents.map((document) {
                 if(document['sender'] == widget.uid){
-                  return Container(
-                    width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.only(left: 5, right: 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.only(right: 5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                '既読',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.white
+                  return Column(
+                    children: [
+                      _createdDateWidget(document, createdAt),
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        padding: EdgeInsets.only(left: 5, right: 5),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(right: 5),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    '既読',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.white
+                                    ),
+                                  ),
+                                  convertDateTime(document['created_at']),
+                                  // Text(
+                                  //     document['created_at'].toDate().toString()
+                                  // ),
+                                ],
+                              ),
+                            ),
+                            ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: MediaQuery.of(context).size.width * 0.60,
+                              ),
+                              child: Container(
+                                margin: EdgeInsets.only(top: 0, bottom: 5),
+                                padding: EdgeInsets.fromLTRB(12, 10, 12, 10),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                                    color: Color(0xFF70DE53)
+                                ),
+                                child: Text(document['content'],textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontSize: 15
+                                  ),
                                 ),
                               ),
-                              convertDateTime(document['created_at']),
-                              // Text(
-                              //     document['created_at'].toDate().toString()
-                              // ),
-                            ],
-                          ),
-                        ),
-                        ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width * 0.60,
-                          ),
-                          child: Container(
-                            margin: EdgeInsets.only(top: 0, bottom: 5),
-                            padding: EdgeInsets.fromLTRB(12, 10, 12, 10),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(20)),
-                                color: Color(0xFF70DE53)
                             ),
-                            child: Text(document['content'],textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontSize: 15
-                              ),
-                            ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   );
                 } else {
                   return Container(
@@ -317,6 +335,51 @@ class _ChatRoomState extends State<ChatRoom> {
         }
       ),
     );
+  }
+
+  Widget _createdDateWidget(document, createdAt){
+    if(document['day_first'] == true){
+      final createdAtFirst = document['created_at'].toDate();
+      return Container(
+        padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+          color: Colors.black.withOpacity(0.1)
+        ),
+        child: Text(
+          _createDate(createdAtFirst),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 13
+          ),
+        ),
+      );
+    }
+    return Container();
+  }
+
+  _createDate(createdAtFirst){
+
+    final createdAtFirstOfYesterday = DateTime(createdAtFirst.year, createdAtFirst.month, createdAtFirst.day).toString();
+    print(createdAtFirstOfYesterday);
+
+    if(lastMessageDate.year == createdAtFirst.year){ //今年のメッセージの場合
+      if("${lastMessageDate.month}${lastMessageDate.day}" == "${createdAtFirst.month}${createdAtFirst.day}"){ // 今日のメッセージの場合
+        firstMessageDate = "今日";
+        return firstMessageDate;
+      } else { //今日のメッセージではない場合
+        if(createdAtFirstOfYesterday.toString() == yesterday.toString()){ //昨日のメッセージの場合
+          firstMessageDate = "昨日";
+          return firstMessageDate;
+        } else { //昨日のメッセージではない場合
+          firstMessageDate = "${createdAtFirst.month}/${createdAtFirst.day}(${_weekName[createdAtFirst.weekday - 1]})";
+          return firstMessageDate;
+        }
+      }
+    } else { //今年のメッセージではない場合
+      firstMessageDate = "${createdAtFirst.year}年${createdAtFirst.month}月${createdAtFirst.day}日(${_weekName[createdAtFirst.weekday - 1]})";
+      return firstMessageDate;
+    }
   }
 
   Widget convertDateTime(createdAt){
