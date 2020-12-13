@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:lize/views/chat_room.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class TalkPage extends StatefulWidget {
+
+  final String uid;
+  TalkPage(this.uid);
+
   @override
   _TalkPageState createState() => _TalkPageState();
 }
 
 class _TalkPageState extends State<TalkPage> {
 
-  var list = ["メッセージ", "メッセージ", "メッセージ", "メッセージ", "メッセージ",];
+  final rooms = FirebaseFirestore.instance.collection('rooms');
 
   @override
   Widget build(BuildContext context) {
@@ -103,14 +108,99 @@ class _TalkPageState extends State<TalkPage> {
                 Container(
                   height: MediaQuery.of(context).size.height,
                   padding: EdgeInsets.only(top: 5),
-                  child: ListView.builder(
-                    itemBuilder: (BuildContext context, int index){
-                      if (index >= list.length) {
-                        list.addAll(["メッセージ","メッセージ","メッセージ","メッセージ",]);
+                  child: StreamBuilder<QuerySnapshot>(
+                    // stream: rooms.where('${widget.uid}', isEqualTo: 'member').snapshots(),
+                    stream: rooms.snapshots(),
+                    builder: (context, snapshot) {
+                      if(snapshot.hasData){
+                        final List<DocumentSnapshot> documents = snapshot.data.docs;
+                        // return _friendList(documents);
+                        return ListView(
+                          children: documents.map((document){
+                            return GestureDetector(
+                              child: Container(
+                                  child: Container(
+                                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                    height: 80,
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          child: Center(
+                                            child: Container(
+                                              width: 65,
+                                              decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  image: DecorationImage(
+                                                    image: AssetImage('images/LIZE-icon.jpg'),
+                                                    fit: BoxFit.cover,
+                                                  )
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          height: 80,
+                                          width: MediaQuery
+                                              .of(context)
+                                              .size
+                                              .width - 130,
+                                          padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "ここに友達の名前が入る",
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 1,
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                              StreamBuilder<QuerySnapshot>(
+                                                  stream: FirebaseFirestore.instance.collection("messages").where('room_id', isEqualTo: document.id).orderBy('created_at', descending: false).snapshots(),
+                                                  builder: (context, snapshot) {
+                                                    if(snapshot.hasData){
+                                                      return lassMessageExsit(snapshot);
+                                                    }
+                                                    return Container();
+                                                  }
+                                              ),
+
+                                            ],
+                                          ),
+                                        ),
+                                        Spacer(),
+                                        Container(
+                                          padding: EdgeInsets.only(top: 5),
+                                          height: 80,
+                                          child: Text(
+                                            "昨日",
+                                            style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 12
+                                            ),
+                                            textAlign: TextAlign.right,
+
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  )
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(builder: (context) => ChatRoom())
+                                );
+                              },
+                            );
+                          }).toList(),
+                        );
                       }
-                      return _friendList(list[index]);
+                      return Container();
                     }
-                  ),
+                  )
                 )
               ]
             )
@@ -120,81 +210,25 @@ class _TalkPageState extends State<TalkPage> {
     );
   }
 
-  Widget _friendList(String title) {
-    return GestureDetector(
-      child: Container(
-        child: Container(
-          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-          height: 80,
-          child: Row(
-            children: [
-              Container(
-                child: Center(
-                  child: Container(
-                    width: 65,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        image: AssetImage('images/LIZE-icon.jpg'),
-                        fit: BoxFit.cover,
-                      )
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                height: 80,
-                width: MediaQuery.of(context).size.width - 130,
-                padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "ここに友達の名前が入る",
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: TextStyle(
-                        fontSize: 15,
-                      ),
-                    ),
-                    Text(
-                      "ここにトークの最後のメッセージが２行まで入ります。",
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey[600]
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Spacer(),
-              Container(
-                padding: EdgeInsets.only(top: 5),
-                height: 80,
-                child: Text(
-                  "昨日",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 12
-                  ),
-                  textAlign: TextAlign.right,
+  Widget lassMessageExsit(snapshot) {
 
-                ),
-              )
-            ],
-          ),
-        )
-      ),
-      onTap: (){
-        Navigator.push(
-            context,
-            CupertinoPageRoute(builder: (context) => ChatRoom())
-        );
-      },
-    );
+    try{
+      return Text(
+        snapshot.data.docs.last['content'],
+        overflow: TextOverflow.ellipsis,
+        maxLines: 2,
+        style: TextStyle(
+            fontSize: 13,
+            color: Colors.grey[600]
+        ),
+      );
+    } catch(e){
+      print(e);
+      return Text("");
+    }
+  }
+
+  Widget _friendList(documents) {
 
   }
 }

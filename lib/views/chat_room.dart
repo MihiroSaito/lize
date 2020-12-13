@@ -44,9 +44,9 @@ class _ChatRoomState extends State<ChatRoom> {
   Widget build(BuildContext context) {
 
     final availableHeight = MediaQuery.of(context).size.height -
-        AppBar().preferredSize.height -
-        MediaQuery.of(context).padding.top -
-        MediaQuery.of(context).padding.bottom;
+      AppBar().preferredSize.height -
+      MediaQuery.of(context).padding.top -
+      MediaQuery.of(context).padding.bottom;
 
     var bottomSpace = MediaQuery.of(context).viewInsets.bottom;
 
@@ -145,11 +145,6 @@ class _ChatRoomState extends State<ChatRoom> {
                           if(!(textController.text == '')){
                             saveData(availableHeight, bottomSpace).then((value){
                               textController.text = "";
-                              scroll.animateTo(
-                                0,
-                                duration: Duration(milliseconds: 10000),
-                                curve: Curves.easeIn
-                              );
                             }).catchError((onError) {
                               print(onError);
                             });
@@ -192,6 +187,7 @@ class _ChatRoomState extends State<ChatRoom> {
             }
         );
       }
+      await scroll.animateTo(scroll.position.maxScrollExtent, duration: Duration(microseconds: 1000), curve: Curves.ease);
     } catch (e) {
       print(e);
     }
@@ -201,7 +197,7 @@ class _ChatRoomState extends State<ChatRoom> {
 
     return Container(
       height: availableHeight - bottomSpace,
-      padding: EdgeInsets.only(top: 5, bottom: 50),
+      padding: EdgeInsets.only(bottom: 50),
       width: MediaQuery.of(context).size.width,
       child: StreamBuilder<QuerySnapshot>(
         stream: messages.where('room_id', isEqualTo: widget.roomId).orderBy('created_at', descending: false).snapshots(),
@@ -351,7 +347,7 @@ class _ChatRoomState extends State<ChatRoom> {
     );
   }
 
-  Widget _createdDateWidget(document, createdAt){
+  Widget _createdDateWidget(document, createdAt) {
     if(document['day_first'] == true){
       final createdAtFirst = document['created_at'].toDate();
       return Container(

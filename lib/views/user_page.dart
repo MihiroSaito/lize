@@ -69,7 +69,7 @@ class _UserPageState extends State<UserPage> {
             case 0:
               return HomePage();
             case 1:
-              return TalkPage();
+              return TalkPage(widget.uid);
             case 2:
               return Scaffold(
                 appBar: AppBar(),
