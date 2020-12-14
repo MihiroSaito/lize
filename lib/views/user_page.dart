@@ -22,6 +22,10 @@ class UserPage extends StatefulWidget {
 
 class _UserPageState extends State<UserPage> {
 
+  String _name = "";
+  String _url = "";
+  String _uid = "";
+
   void setData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('user_uid', widget.uid);
@@ -29,11 +33,24 @@ class _UserPageState extends State<UserPage> {
     prefs.setString('user_url', widget.url);
   }
 
+  void getData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _uid = prefs.getString('user_uid') ?? "未設定";
+      _name = prefs.getString('user_name') ?? "未設定";
+      _url = prefs.getString('user_url') ?? "未設定";
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
 
     if(widget.firstLog == true){
       setData();
+    }
+
+    if(widget.uid == null){
+      getData();
     }
 
     return CupertinoTabScaffold(
@@ -67,9 +84,9 @@ class _UserPageState extends State<UserPage> {
         tabBuilder: (context, index) {
           switch (index) {
             case 0:
-              return HomePage();
+              return HomePage(uid: _uid, name: _name, url: _url);
             case 1:
-              return TalkPage(widget.uid);
+              return TalkPage(_uid);
             case 2:
               return Scaffold(
                 appBar: AppBar(),

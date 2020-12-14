@@ -9,30 +9,36 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
 
+  final String uid;
+  final String name;
+  final String url;
+
+  HomePage({this.uid, this.name, this.url});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
 
-  String name = "";
-  String url = "";
-  String uid = "";
-
-  @override
-  void initState() {
-    super.initState();
-    // 初期化時にShared Preferencesに保存している値を読み込む
-    getData();
-  }
-  getData() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      uid = prefs.getString('user_uid') ?? "未設定";
-      name = prefs.getString('user_name') ?? "未設定";
-      url = prefs.getString('user_url') ?? "未設定";
-    });
-  }
+  // // String name = "";
+  // // String url = "";
+  // // String uid = "";
+  //
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // 初期化時にShared Preferencesに保存している値を読み込む
+  //   getData();
+  // }
+  // getData() async {
+  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   setState(() {
+  //     uid = prefs.getString('user_uid') ?? "未設定";
+  //     name = prefs.getString('user_name') ?? "未設定";
+  //     url = prefs.getString('user_url') ?? "未設定";
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +53,9 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(Icons.settings),
             onPressed: () async {
               final SharedPreferences prefs = await SharedPreferences.getInstance();
-              prefs.remove('user_uid');
-              prefs.remove('user_name');
-              prefs.remove('user_url');
+              await prefs.remove('user_uid');
+              await prefs.remove('user_name');
+              await prefs.remove('user_url');
               await FirebaseAuth.instance.signOut();
               print('ログアウト');
               Navigator.pushReplacement(
@@ -154,14 +160,14 @@ class _HomePageState extends State<HomePage> {
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.all(Radius.circular(50)),
                                         image: DecorationImage(
-                                          image: NetworkImage(url),
+                                          image: NetworkImage(widget.url),
                                           fit: BoxFit.cover
                                         )
                                     ),
                                   ),
                                   SizedBox(width: 20,),
                                   Expanded(
-                                    child: Text(name, style: TextStyle(
+                                    child: Text(widget.name, style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       ),
@@ -559,7 +565,7 @@ class _HomePageState extends State<HomePage> {
               child: ListView(
                 physics: NeverScrollableScrollPhysics(),
                 children: documents.map((document) {
-                  if(!(document['uid'] == uid)) {
+                  if(!(document['uid'] == widget.uid)) {
                     return GestureDetector(
                       child: Container(
                         padding: EdgeInsets.only(top: 10),
@@ -629,7 +635,7 @@ class _HomePageState extends State<HomePage> {
       pageBuilder: (context, animation, secondaryAnimation) => FriendPage(friendUid: friendUid,
         friendUrl: friendUrl,
         friendName: friendName,
-        uid: uid
+        uid: widget.uid
       ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         var begin = Offset(0.0, 1.0);

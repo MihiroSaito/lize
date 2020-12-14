@@ -309,7 +309,6 @@ class _FriendPageState extends State<FriendPage> {
   Future searchChatRoom() async {
     try {
       final rooms = FirebaseFirestore.instance.collection("rooms");
-      // if(rooms.where('${widget.uid}', isEqualTo: 'member').where('${widget.friendUid}', isEqualTo: 'member');
       final room = rooms.where('${widget.uid}', isEqualTo: 'member').where('${widget.friendUid}', isEqualTo: 'member');
       room.get().then((value){
         final searchedRoom = value.docs.first;
@@ -346,6 +345,7 @@ class _FriendPageState extends State<FriendPage> {
             'room_name': null,
             '${widget.uid}': "member",
             '${widget.friendUid}': "member",
+            'member': [widget.uid, widget.friendUid],
             'created_at': DateTime.now(),
           }
       );

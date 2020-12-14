@@ -170,6 +170,7 @@ class _ChatRoomState extends State<ChatRoom> {
         await doc.set(
             {
               'day_first': true,
+              'read': false,
               'room_id': widget.roomId,
               'content': textController.text,
               'sender': widget.uid,
@@ -180,6 +181,7 @@ class _ChatRoomState extends State<ChatRoom> {
         await doc.set(
             {
               'day_first': false,
+              'read': false,
               'room_id': widget.roomId,
               'content': textController.text,
               'sender': widget.uid,
@@ -228,13 +230,7 @@ class _ChatRoomState extends State<ChatRoom> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Text(
-                                    '既読',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.white
-                                    ),
-                                  ),
+                                  readContentWidget(document),
                                   convertDateTime(document['created_at']),
                                   // Text(
                                   //     document['created_at'].toDate().toString()
@@ -248,7 +244,7 @@ class _ChatRoomState extends State<ChatRoom> {
                               ),
                               child: Container(
                                 margin: EdgeInsets.only(top: 0, bottom: 5),
-                                padding: EdgeInsets.fromLTRB(12, 10, 12, 10),
+                                padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.all(Radius.circular(20)),
                                     color: Color(0xFF70DE53)
@@ -266,6 +262,18 @@ class _ChatRoomState extends State<ChatRoom> {
                     ],
                   );
                 } else {
+                  // if(!(document['read'] == true)){
+                  //   try{
+                  //
+                  //   }catch(e){
+                  //     if(e == 'field does not exist within the DocumentSnapshotPlatform'){
+                  //     }
+                  //     print('aaaa');
+                  //     print(e);
+                  //   }
+                  //
+                  // }
+                  readContent(document);
                   return Column(
                     children: [
                       _createdDateWidget(document, createdAt),
@@ -310,7 +318,7 @@ class _ChatRoomState extends State<ChatRoom> {
                                       ),
                                       child: Container(
                                         margin: EdgeInsets.only(top: 0, bottom: 5, left: 3),
-                                        padding: EdgeInsets.fromLTRB(12, 10, 12, 10),
+                                        padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
                                         decoration: BoxDecoration(
                                             borderRadius: BorderRadius.all(Radius.circular(20)),
                                             color: Colors.white
@@ -361,7 +369,7 @@ class _ChatRoomState extends State<ChatRoom> {
           _createDate(createdAtFirst),
           style: TextStyle(
             color: Colors.white,
-            fontSize: 13
+            fontSize: 11
           ),
         ),
       );
@@ -405,5 +413,31 @@ class _ChatRoomState extends State<ChatRoom> {
       var dateTime = formattedHour + ":" + formattedMin;
       return Text(dateTime, style: TextStyle(color: Colors.white, fontSize: 12),);
     }
+  }
+
+  Future readContent(document) async {
+    try {
+      final doc = FirebaseFirestore.instance.collection("messages").doc(document.id);
+      await doc.update(
+          {
+            'read': true
+          }
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Widget readContentWidget(document){
+    if(document['read'] == true){
+      return Text(
+        '既読',
+        style: TextStyle(
+            fontSize: 11,
+            color: Colors.white
+        ),
+      );
+    }
+    return Text("");
   }
 }
